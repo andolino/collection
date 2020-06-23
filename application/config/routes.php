@@ -52,12 +52,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] 					= 'admin';
 $route['constituent-list'] 						= 'Admin/member_list';
 $route['monthly-bills'] 						= 'Admin/monthly_bills';
+$route['vendo'] 						= 'Admin/vendo';
+$route['internet-sales'] 						= 'Admin/internet_sales';
 $route['add-constituent'] 						= 'Admin/add_constituent';
 $route['add-monthly-bills'] 						= 'Admin/add_monthly_bills';
+$route['add-vendo'] 						= 'Admin/add_vendo';
+$route['add-internet-sales'] 						= 'Admin/add_internet_sales';
+$route['edit-monthly-bills'] 						= 'Admin/edit_monthly_bills';
+$route['edit-vendo'] 						= 'Admin/edit_vendo';
+$route['edit-internet-sales'] 						= 'Admin/edit_internet_sales';
 $route['save-constituent'] 						= 'Admin/save_constituent';
 $route['save-monthly-bills'] 						= 'Admin/save_monthly_bills';
+$route['save-vendo'] 						= 'Admin/save_vendo';
+$route['save-internet-sales'] 						= 'Admin/save_internet_sales';
 $route['server-tbl-lgu-constituent'] 	= 'Admin/server_tbl_lgu_constituent';
 $route['server-tbl-monthly-bills'] 	= 'Admin/server_tbl_monthly_bills';
+$route['server-tbl-vendo'] 	= 'Admin/server_tbl_vendo';
+$route['server-tbl-internet-sales'] 	= 'Admin/server_tbl_internet_sales';
 $route['login'] 											= 'Admin/usr_login';
 $route['submit-login'] 								= 'Admin/proceed_login';
 $route['logout'] 											= 'Admin/destroy_sess';
@@ -75,6 +86,11 @@ $route['edit-constituent'] 						= 'Admin/edit_constituent';
 $route['delete-constituent'] 					= 'Admin/deleteConstituent';
 $route['tbl-constituent-list'] 				= 'Admin/tbl_constituent_list';
 $route['tbl-monthly-bills'] 				= 'Admin/tbl_monthly_bills';
+$route['tbl-vendo'] 				= 'Admin/tbl_vendo';
+$route['tbl-internet-sales'] 				= 'Admin/tbl_internet_sales';
+$route['get-monthly-bill-hidden'] 				= 'Admin/get_monthly_bills_hidden';
+$route['get-vendo-hidden'] 				= 'Admin/get_vendo_hidden';
+$route['get-internet-sales-hidden'] 				= 'Admin/get_internet_sales_hidden';
 
 
 

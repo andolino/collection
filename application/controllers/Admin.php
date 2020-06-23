@@ -55,7 +55,76 @@ class Admin extends MY_Controller {
 	
 	public function monthly_bills(){
 		$params['heading'] = 'MONTHLY BILLS';
+		$sd = date('Y-m-01');
+		$ed = date('Y-m-t');
+		$params['data'] = $this->db->query("SELECT m1.*, m2.transaction_date, m2.first_name, m2.middle_name, m2.last_name 
+																				FROM monthly_bills m1 
+																				LEFT JOIN lgu_constituent m2 on m1.lgu_constituent_id = m2.lgu_constituent_id 
+																				WHERE m1.date_applied BETWEEN '$sd' AND '$ed'")->result();
+		$params['members'] = $this->db->get_where('lgu_constituent', array('member_type' => 0))->result();
 		$this->adminContainer('admin/monthly-bills', $params);	
+	}	
+	
+	public function vendo(){
+		$params['heading'] = 'VENDO';
+		$sd = date('Y-m-01');
+		$ed = date('Y-m-t');
+		$params['data'] = $this->db->query("SELECT m1.*, m2.transaction_date, m2.first_name, m2.middle_name, m2.last_name 
+																				FROM vendo m1 
+																				LEFT JOIN lgu_constituent m2 on m1.lgu_constituent_id = m2.lgu_constituent_id 
+																				WHERE m1.date_applied BETWEEN '$sd' AND '$ed'")->result();
+		$params['members'] = $this->db->get_where('lgu_constituent', array('member_type' => 1))->result();
+		$this->adminContainer('admin/vendo', $params);	
+	}
+	
+	public function internet_sales(){
+		$params['heading'] = 'INTERNET SALES';
+		$sd = date('Y-m-01');
+		$ed = date('Y-m-t');
+		$params['data'] = $this->db->query("SELECT m1.*, m2.transaction_date, m2.first_name, m2.middle_name, m2.last_name 
+																					FROM comp_shop m1 
+																					LEFT JOIN lgu_constituent m2 on m1.lgu_constituent_id = m2.lgu_constituent_id 
+																					WHERE m1.date_applied BETWEEN '$sd' AND '$ed'")->result();
+		$params['members'] = $this->db->get('lgu_constituent')->result();
+		$this->adminContainer('admin/internet-sales', $params);	
+	}
+
+	public function get_monthly_bills_hidden(){
+		$lgu_id = $this->input->post('lgu_id');
+		$sd = $this->input->post('sd');
+		$ed = $this->input->post('ed');
+		if ($lgu_id == '') {
+			$q = $this->db->query("SELECT * FROM monthly_bills m left join lgu_constituent lc on lc.lgu_constituent_id = m.lgu_constituent_id WHERE m.date_applied between '$sd' AND '$ed'")->result();	
+		} else {
+			$q = $this->db->query("SELECT * FROM monthly_bills m left join lgu_constituent lc on lc.lgu_constituent_id = m.lgu_constituent_id WHERE m.lgu_constituent_id = $lgu_id and m.date_applied between '$sd' AND '$ed'")->result();
+		}
+		
+		$params['data'] = $q;
+		$params['lgu_id'] = $lgu_id;
+		$this->load->view('admin/crud/tbl-to-export-excel', $params);
+	}
+	
+	public function get_vendo_hidden(){
+		$lgu_id = $this->input->post('lgu_id');
+		$sd = $this->input->post('sd');
+		$ed = $this->input->post('ed');
+		if ($lgu_id == '') {
+			$q = $this->db->query("SELECT * FROM vendo m left join lgu_constituent lc on lc.lgu_constituent_id = m.lgu_constituent_id WHERE m.date_applied between '$sd' AND '$ed'")->result();	
+		} else {
+			$q = $this->db->query("SELECT * FROM vendo m left join lgu_constituent lc on lc.lgu_constituent_id = m.lgu_constituent_id WHERE m.lgu_constituent_id = $lgu_id and m.date_applied between '$sd' AND '$ed'")->result();
+		}
+		
+		$params['data'] = $q;
+		$params['lgu_id'] = $lgu_id;
+		$this->load->view('admin/crud/tbl-to-export-excel-v', $params);
+	}
+	
+	public function get_internet_sales_hidden(){
+		$sd = $this->input->post('sd');
+		$ed = $this->input->post('ed');
+		$q = $this->db->query("SELECT * FROM comp_shop m WHERE m.date_applied between '$sd' AND '$ed'")->result();	
+		$params['data'] = $q;
+		$this->load->view('admin/crud/tbl-to-export-excel-is', $params);
 	}
 
 	public function control_token(){
@@ -117,7 +186,27 @@ class Admin extends MY_Controller {
 	}
 	
 	public function tbl_monthly_bills(){
+		$sd = date('Y-m-01');
+		$ed = date('Y-m-t');
+		$q = $this->db->query("SELECT * FROM monthly_bills m left join lgu_constituent lc on lc.lgu_constituent_id = m.lgu_constituent_id WHERE m.date_applied between '$sd' AND '$ed'")->result();	
+		$params['data'] = $q;
 		$this->load->view('admin/crud/tbl-monthly-bills');
+	}
+	
+	public function tbl_vendo(){
+		$sd = date('Y-m-01');
+		$ed = date('Y-m-t');
+		$q = $this->db->query("SELECT * FROM vendo m left join lgu_constituent lc on lc.lgu_constituent_id = m.lgu_constituent_id WHERE m.date_applied between '$sd' AND '$ed'")->result();	
+		$params['data'] = $q;
+		$this->load->view('admin/crud/tbl_vendo', $params);
+	}
+	
+	public function tbl_internet_sales(){
+		$sd = date('Y-m-01');
+		$ed = date('Y-m-t');
+		$q = $this->db->query("SELECT * FROM comp_shop m WHERE m.date_applied between '$sd' AND '$ed'")->result();	
+		$params['data'] = $q;
+		$this->load->view('admin/crud/tbl-internet-sales');
 	}
 
 	public function view_constituent_list(){
@@ -153,25 +242,12 @@ class Admin extends MY_Controller {
 			$data = array();
 			$no++;
 			//<input type="checkbox" id="chk-const-list-tbl" value="'.$row->lgu_constituent_id.'" name="chk-const-list-tbl">
-   		$data[] = '<input type="checkbox" id="chk-const-list-tbl" class="chk-const-list-tbl" value="'.$row->lgu_constituent_id.'" name="chk-const-list-tbl[]">';
    		$data[] = $row->lgu_constituent_id;
    		$data[] = strtoupper($row->last_name . ', ' . $row->first_name . ' ' . $row->middle_name);
    		$data[] = strtoupper($row->residential_address);
-   		$data[] = $row->age;
-   		$data[] = date('F j, Y', strtotime($row->dob));
-   		$data[] = $row->occupation;
-   		$data[] = $row->email;
-   		switch ($row->house_type) {
-   			case 1:
-   				$data[] = 'Home';
-   				break;
-   			case 2:
-   				$data[] = 'Dormitory';
-   				break;
-   			default:
-   				$data[] = 'Apartment';
-   				break;
-   		}
+			$data[] = $row->age;
+			$data[] = date('F j, Y', strtotime($row->dob));
+   		$data[] = $row->member_type == 0 ? 'Member' : 'Vendo';
    		$data[] = '<a href="javascript:void(0);" id="loadPage" data-link="view-constituent" data-ind="'.$row->lgu_constituent_id.'" 
    								data-badge-head="'.strtoupper($row->last_name . ', ' . $row->first_name . ' ' . $row->middle_name).'\'s INFO" data-cls="cont-view-member" data-placement="top" data-toggle="tooltip" title="View" data-id="'.$row->lgu_constituent_id.'">
    								<i class="fas fa-search"></i></a> | 
@@ -203,8 +279,8 @@ class Admin extends MY_Controller {
    		$data[] = $row->month;
    		$data[] = $row->date_applied;
    		$data[] = $row->plan;
-   		$data[] = '<a href="javascript:void(0);" id="loadPage" data-placement="top" data-toggle="tooltip" title="Edit" data-link="edit-constituent" 
-   								data-ind="'.$row->monthly_bills_id . '" data-cls="cont-edit-member" data-badge-head="EDIT"><i class="fas fa-edit"></i></a> | 
+   		$data[] = '<a href="javascript:void(0);" id="loadPage" data-placement="top" data-toggle="tooltip" title="Edit" data-link="edit-monthly-bills" 
+   								data-ind="'.$row->monthly_bills_id . '" data-cls="cont-edit-monthly-bills" data-badge-head="EDIT"><i class="fas fa-edit"></i></a> | 
    							<a href="javascript:void(0);" id="remove-lgu-const-list" data-placement="top" data-toggle="tooltip" title="Remove"><i class="fas fa-trash"></i></a>';
 			$res[] = $data;
 		}
@@ -213,6 +289,61 @@ class Admin extends MY_Controller {
 			'draw' 						=> isset($_POST['draw']) ? $_POST['draw'] : null,
 			'recordsTotal' 		=> $this->AdminMod->count_all_monthly_bills(),
 			'recordsFiltered' => $this->AdminMod->count_filter_monthly_bills(),
+			'data' 						=> $res
+		);
+
+		echo json_encode($output);
+	}
+	
+	public function server_tbl_vendo(){
+		$result = $this->AdminMod->get_output_vendo();
+		$res 		= array();
+		$no 		= isset($_POST['start']) ? $_POST['start'] : 0;
+
+		foreach ($result as $row) {
+			$data = array();
+			$no++;
+			//<input type="checkbox" id="chk-const-list-tbl" value="'.$row->lgu_constituent_id.'" name="chk-const-list-tbl">
+   		$data[] = strtoupper($row->last_name . ', ' . $row->first_name . ' ' . $row->middle_name);
+   		$data[] = $row->date_applied;
+   		$data[] = $row->amount;
+   		$data[] = '<a href="javascript:void(0);" id="loadPage" data-placement="top" data-toggle="tooltip" title="Edit" data-link="edit-vendo" 
+   								data-ind="'.$row->vendo_id . '" data-cls="cont-edit-monthly-bills" data-badge-head="EDIT"><i class="fas fa-edit"></i></a> | 
+   							<a href="javascript:void(0);" id="remove-lgu-const-list" data-placement="top" data-toggle="tooltip" title="Remove"><i class="fas fa-trash"></i></a>';
+			$res[] = $data;
+		}
+
+		$output = array (
+			'draw' 						=> isset($_POST['draw']) ? $_POST['draw'] : null,
+			'recordsTotal' 		=> $this->AdminMod->count_all_vendo(),
+			'recordsFiltered' => $this->AdminMod->count_filter_vendo(),
+			'data' 						=> $res
+		);
+
+		echo json_encode($output);
+	}
+	
+	public function server_tbl_internet_sales(){
+		$result = $this->AdminMod->get_output_internet_sales();
+		$res 		= array();
+		$no 		= isset($_POST['start']) ? $_POST['start'] : 0;
+
+		foreach ($result as $row) {
+			$data = array();
+			$no++;
+			//<input type="checkbox" id="chk-const-list-tbl" value="'.$row->lgu_constituent_id.'" name="chk-const-list-tbl">
+   		$data[] = $row->date_applied;
+   		$data[] = $row->amount;
+   		$data[] = '<a href="javascript:void(0);" id="loadPage" data-placement="top" data-toggle="tooltip" title="Edit" data-link="edit-internet-sales" 
+   								data-ind="'.$row->comp_shop_id . '" data-cls="cont-edit-monthly-bills" data-badge-head="EDIT"><i class="fas fa-edit"></i></a> | 
+   							<a href="javascript:void(0);" id="remove-lgu-const-list" data-placement="top" data-toggle="tooltip" title="Remove"><i class="fas fa-trash"></i></a>';
+			$res[] = $data;
+		}
+
+		$output = array (
+			'draw' 						=> isset($_POST['draw']) ? $_POST['draw'] : null,
+			'recordsTotal' 		=> $this->AdminMod->count_all_internet_sales(),
+			'recordsFiltered' => $this->AdminMod->count_filter_internet_sales(),
 			'data' 						=> $res
 		);
 
@@ -228,8 +359,17 @@ class Admin extends MY_Controller {
 	}	
 	
 	public function add_monthly_bills(){
-		$params['member_list'] = $this->db->get_where('lgu_constituent')->result();
+		$params['member_list'] = $this->db->get_where('lgu_constituent', array('member_type' => 0))->result();
 		$this->load->view('admin/crud/add_monthly_bills', $params);
+	}
+	
+	public function add_vendo(){
+		$params['member_list'] = $this->db->get_where('lgu_constituent', array('member_type' => 1))->result();
+		$this->load->view('admin/crud/add_vendo', $params);
+	}
+	
+	public function add_internet_sales(){
+		$this->load->view('admin/crud/add_internet_sales');
 	}
 
 	public function save_monthly_bills(){
@@ -239,21 +379,84 @@ class Admin extends MY_Controller {
 				'date_applied' 					=> $this->input->post('date_applied'),
 				'plan' 									=> $this->input->post('plan'),
 				'entry_date' 						=> date('Y-m-d'),
-				'amount'								=> $this->input->post('amount'),
+				'amount'								=> floatval(str_replace(',', '', $this->input->post('amount'))),
 				'remarks'								=> $this->input->post('remarks'),
 				'lgu_constituent_id'		=> $this->input->post('lgu_constituent_id')
-			), 'monthly_bills_id', $this->input->post('has_update'));
+			), array('monthly_bills_id' => $this->input->post('has_update')));
 		} else {
 			$q = $this->db->insert('monthly_bills', array(
 				'month' 								=> $this->input->post('month'),
 				'date_applied' 					=> $this->input->post('date_applied'),
 				'plan' 									=> $this->input->post('plan'),
 				'entry_date' 						=> date('Y-m-d'),
-				'amount'								=> $this->input->post('amount'),
+				'amount'								=> floatval(str_replace(',', '', $this->input->post('amount'))),
 				'remarks'								=> $this->input->post('remarks'),
 				'lgu_constituent_id'		=> $this->input->post('lgu_constituent_id')
 			));
 		}
+		
+		$res = array();
+		if ($q) {
+			$res['param1'] = 'Success!';
+			$res['param2'] = 'Saved!';
+			$res['param3'] = 'success';
+		} else {
+			$res['param1'] = 'Opps!';
+			$res['param2'] = 'Error Encountered';
+			$res['param3'] = 'warning';
+		}
+		echo json_encode($res);
+	}
+	
+	public function save_vendo(){
+		if($this->input->post('has_update') != '') {
+			$q = $this->db->update('vendo', array(
+				'date_applied' 					=> $this->input->post('date_applied'),
+				'entry_date' 						=> date('Y-m-d'),
+				'amount'								=> floatval(str_replace(',', '', $this->input->post('amount'))),
+				'remarks'								=> $this->input->post('remarks'),
+				'lgu_constituent_id'		=> $this->input->post('lgu_constituent_id')
+			), array('vendo_id' => $this->input->post('has_update')));
+		} else {
+			$q = $this->db->insert('vendo', array(
+				'date_applied' 					=> $this->input->post('date_applied'),
+				'entry_date' 						=> date('Y-m-d'),
+				'amount'								=> floatval(str_replace(',', '', $this->input->post('amount'))),
+				'remarks'								=> $this->input->post('remarks'),
+				'lgu_constituent_id'		=> $this->input->post('lgu_constituent_id')
+			));
+		}
+		
+		$res = array();
+		if ($q) {
+			$res['param1'] = 'Success!';
+			$res['param2'] = 'Saved!';
+			$res['param3'] = 'success';
+		} else {
+			$res['param1'] = 'Opps!';
+			$res['param2'] = 'Error Encountered';
+			$res['param3'] = 'warning';
+		}
+		echo json_encode($res);
+	}
+	
+	public function save_internet_sales(){
+		if($this->input->post('has_update') != '') {
+			$q = $this->db->update('comp_shop', array(
+				'date_applied' 					=> $this->input->post('date_applied'),
+				'entry_date' 						=> date('Y-m-d'),
+				'amount'								=> floatval(str_replace(',', '', $this->input->post('amount'))),
+				'remarks'								=> $this->input->post('remarks'),
+			), array('comp_shop_id' => $this->input->post('has_update')));
+		} else {
+			$q = $this->db->insert('comp_shop', array(
+				'date_applied' 					=> $this->input->post('date_applied'),
+				'entry_date' 						=> date('Y-m-d'),
+				'amount'								=> floatval(str_replace(',', '', $this->input->post('amount'))),
+				'remarks'								=> $this->input->post('remarks'),
+			));
+		}
+		
 		$res = array();
 		if ($q) {
 			$res['param1'] = 'Success!';
@@ -289,24 +492,46 @@ class Admin extends MY_Controller {
 		$params['socialStatusIDNum'] 	= $socialStatusIDArr;
 		$this->load->view('admin/crud/edit-constituent', $params);
 	}
+	
+	public function edit_monthly_bills(){
+		$monthly_bills_id 		 = $this->input->get('data');
+		$params['member_list'] = $this->db->get_where('lgu_constituent', array('member_type'=> 0))->result();
+		$params['data'] 		   = $this->db->get_where('monthly_bills', array('monthly_bills_id' => $monthly_bills_id))->row();
+		$this->load->view('admin/crud/edit-monthly-bills', $params);
+	}
+	
+	public function edit_vendo(){
+		$vendo_id 		 = $this->input->get('data');
+		$params['member_list'] = $this->db->get_where('lgu_constituent', array('member_type'=> 1))->result();
+		$params['data'] 		   = $this->db->get_where('vendo', array('vendo_id' => $vendo_id))->row();
+		$this->load->view('admin/crud/edit_vendo', $params);
+	}
+	
+	public function edit_internet_sales(){
+		$comp_shop_id 		 = $this->input->get('data');
+		$params['data'] 		   = $this->db->get_where('comp_shop', array('comp_shop_id' => $comp_shop_id))->row();
+		$this->load->view('admin/crud/edit-internet-sales', $params);
+	}
 
 	public function save_constituent(){
-		$this->form_validation->set_rules('house_type', 'House Type', 'required');
+		// $this->form_validation->set_rules('house_type', 'House Type', 'required');
+		$this->form_validation->set_rules('member_type', 'Member Type', 'required');
 		$this->form_validation->set_rules('last_name', 'Last Name', 'required');
 		$this->form_validation->set_rules('middle_name', 'Middle Name', 'required');
 		$this->form_validation->set_rules('first_name', 'First Name', 'required');
 		$this->form_validation->set_rules('gender', 'Gender', 'required');
 		$this->form_validation->set_rules('age', 'Age', 'required');
 		$this->form_validation->set_rules('dob', 'Date of birth', 'required|date');
-		$this->form_validation->set_rules('highest_educ_attmnt', 'Highest Educational Attainment', 'required');
+		// $this->form_validation->set_rules('highest_educ_attmnt', 'Highest Educational Attainment', 'required');
 		$this->form_validation->set_rules('residential_address', 'Residential Address', 'required');
 		$this->form_validation->set_rules('citizenship', 'Citizenship', 'required');
 		$this->form_validation->set_rules('birthplace', 'Birthplace', 'required');
 		$this->form_validation->set_rules('other_name', 'Nick Name', 'required');
-		$this->form_validation->set_rules('fathers_name', 'Fathers Name', 'required');
-		$this->form_validation->set_rules('mothers_name', 'Mothers Name', 'required');
-		$this->form_validation->set_rules('fathers_birth_place', 'Fathers Birth Place', 'required');
-		$this->form_validation->set_rules('mothers_birth_place', 'Mothers Birth Place', 'required');
+		$this->form_validation->set_rules('transaction_date', 'Transaction Date', 'required');
+		// $this->form_validation->set_rules('fathers_name', 'Fathers Name', 'required');
+		// $this->form_validation->set_rules('mothers_name', 'Mothers Name', 'required');
+		// $this->form_validation->set_rules('fathers_birth_place', 'Fathers Birth Place', 'required');
+		// $this->form_validation->set_rules('mothers_birth_place', 'Mothers Birth Place', 'required');
 		// if (array_key_exists('pwd_id', $_POST)) {
 		// 	$this->form_validation->set_rules('pwd_id', 'PWD ID', 'trim|required');
 		// }

@@ -25,11 +25,11 @@
 			<div class="col-1 pr-0 border-right">
 				<select class="custom-select custom-select-sm" id="select-type">
 					<option selected value="">All</option>
-					<option value="1">By Member</option>
+					<option value="1">By Vendo</option>
 				</select>
 			</div>
-			<div class="col-2 pr-0 border-right d-none members_name">
-				<select class="custom-select custom-select-sm font-12" name="members_name" id="members_name">
+			<div class="col-2 pr-0 border-right d-none members_name_v">
+				<select class="custom-select custom-select-sm font-12" name="members_name_v" id="members_name_v">
 				<option selected hidden value="">All</option>
 					<?php foreach($members as $row): ?>
 						<option value="<?php echo $row->lgu_constituent_id; ?>"><?php echo strtoupper($row->last_name.', '.$row->first_name.' '.$row->middle_name); ?></option>
@@ -39,25 +39,25 @@
 			<div class="col-9">
 				<input type="hidden" name="sd" value="<?php echo date('Y-m-01'); ?>">
 				<input type="hidden" name="ed" value="<?php echo date('Y-m-t'); ?>">
-				<button type="button" class="btn btn-default btn-md rounded-0 font-12 filter_monthly_bills">
+				<button type="button" class="btn btn-default btn-md rounded-0 font-12 filter_vendo">
 					<i class="fas fa-calendar"></i> FILTER DATE
 				</button>
-				<button type="button" class="btn btn-default btn-md rounded-0 font-12" id="loadPage" data-badge-head="ADD MONTHLY BILLS" data-link="add-monthly-bills" data-ind="" data-cls="cont-add-member">
-					<i class="fas fa-user-plus"></i> Add Monthly Bills
+				<button type="button" class="btn btn-default btn-md rounded-0 font-12" id="loadPage" data-badge-head="ADD VENDO" data-link="add-vendo" data-ind="" data-cls="cont-add-member">
+					<i class="fas fa-user-plus"></i> Add Vendo
 				</button>
-				<a href="javascript:void(0);" class="btn btn-success btn-md rounded-0 font-12 print-filter-mb-excel">
+				<a href="javascript:void(0);" class="btn btn-success btn-md rounded-0 font-12 print-filter-v-excel">
 					<i class="fas fa-table"></i> PRINT EXCEL
 				</a>
 			</div>
 		</div>
 	</div>
 	<div class="navbar bg-light custom-container none">
-		<table class="table font-12 w-100" id="tbl-monthly-bills">
+		<table class="table font-12 w-100" id="tbl-vendo">
 			<thead>
 				<tr>
-					<th scope="col">MONTH</th>
+					<th scope="col">NAME</th>
 					<th scope="col">DATE</th>
-					<th scope="col">PLAN</th>
+					<th scope="col">AMOUNT COLLECTED</th>
 					<th scope="col">ACTION</th>
 				</tr>
 			</thead>
@@ -67,20 +67,16 @@
 		</table>
 		<div class="line"></div>
 		<div class="export-excel">
-		<table class="d-none" id="tbl-monthly-bills-excel" border="1">
+		<table class="d-none" id="tbl-vendo-excel" border="1">
 			<tr>
-				<td>NAME</td>
-				<td>MONTH</td>
-				<td>DATE</td>
-				<td>PLAN</td>
-				<td>AMOUNT</td>
+        <th scope="col">NAME</th>
+        <th scope="col">DATE</th>
+        <th scope="col">AMOUNT COLLECTED</th>
 			</tr>
 			<?php foreach($data as $row): ?>
 				<tr>
 					<td><?php echo strtoupper($row->last_name . ', ' . $row->first_name . ' ' . $row->middle_name); ?></td>
-					<td><?php echo $row->month; ?></td>
 					<td><?php echo $row->date_applied; ?></td>
-					<td><?php echo $row->plan; ?></td>
 					<td><?php echo $row->amount; ?></td>
 				</tr>	
 			<?php endforeach; ?>

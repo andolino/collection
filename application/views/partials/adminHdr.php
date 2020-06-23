@@ -22,6 +22,8 @@
     <script 
     	defer 
     	src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"></script>
+
+    
 </head>
 <body>
   <div class="wrapper">

@@ -13,15 +13,179 @@ class AdminMod extends CI_Model {
 	var $tblMonthlyBills = 'monthly_bills';
 	var $tblMonthlyBillsCollumn = array('monthly_bills_id ', 'month', 'date_applied', 'plan', 'signature', 'entry_date');
 	var $tblMonthlyBillsOrder = array('monthly_bills_id' => 'desc');
+	
+	var $tblInternetSales = 'comp_shop';
+	var $tblInternetSalesCollumn = array('comp_shop_id ', 'month', 'date_applied', 'plan', 'signature', 'entry_date');
+	var $tblInternetSalesOrder = array('comp_shop_id' => 'desc');
+	
+	var $tblVendo = 'v_vendo';
+	var $tblVendoCollumn = array('vendo_id ', 'month', 'date_applied', 'plan', 'signature', 'entry_date', 'first_name', 'middle_name', 'last_name');
+	var $tblVendoOrder = array('vendo_id' => 'desc');
 
+	private function _que_tbl_vendo(){
+		$this->db->from($this->tblVendo);
+		if($this->input->post('sd')) {
+			$sd = $this->input->post('sd');
+			$ed = $this->input->post('ed');
+			$this->db->where("date_applied between '$sd' AND '$ed'");
+		}
+		if ($this->input->post('lgu_id')) {
+			$lgu_id = $this->input->post('lgu_id');
+			$this->db->where('lgu_constituent_id', $lgu_id);
+		}
+		$i = 0;
+		foreach ($this->tblVendoCollumn as $item) {
+			if (!empty($_POST['search']['value'])) {
+				if ($i === 0) {
+					if($this->input->post('sd')) {
+						$sd = $this->input->post('sd');
+						$ed = $this->input->post('ed');
+						$this->db->where("date_applied between '$sd' AND '$ed'");
+					}
+					if ($this->input->post('lgu_id')) {
+						$lgu_id = $this->input->post('lgu_id');
+						$this->db->where('lgu_constituent_id', $lgu_id);
+					}
+					$this->db->like($item, strtolower($_POST['search']['value']));
+				}else{
+					if($this->input->post('sd')) {
+						$sd = $this->input->post('sd');
+						$ed = $this->input->post('ed');
+						$this->db->where("date_applied between '$sd' AND '$ed'");
+					}
+					if ($this->input->post('lgu_id')) {
+						$lgu_id = $this->input->post('lgu_id');
+						$this->db->where('lgu_constituent_id', $lgu_id);
+					}
+					$this->db->or_like($item, strtolower($_POST['search']['value']));
+				}
+			}
+			$column[$i] = $item;
+			$i++;
+		}
+
+		if (isset($_POST['order'])) {
+			$this->db->order_by($column[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		}elseif($this->tblVendoOrder){
+			$order = $this->tblVendoOrder;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+		$this->db->order_by('vendo_id', 'DESC');
+	}
+
+	public function get_output_vendo(){
+		$this->_que_tbl_vendo();
+		if (!empty($_POST['length']))
+		$this->db->limit(($_POST['length'] < 0 ? 0 : $_POST['length']), $_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function count_all_vendo(){
+		$this->db->from($this->tblVendo);
+		return $this->db->count_all_results();
+	}
+
+	public function count_filter_vendo(){
+		$this->_que_tbl_vendo();
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+
+
+	private function _que_tbl_internet_sales(){
+		$this->db->from($this->tblInternetSales);
+		if($this->input->post('sd')) {
+			$sd = $this->input->post('sd');
+			$ed = $this->input->post('ed');
+			$this->db->where("date_applied between '$sd' AND '$ed'");
+		}
+		$i = 0;
+		foreach ($this->tblInternetSalesCollumn as $item) {
+			if (!empty($_POST['search']['value'])) {
+				if ($i === 0) {
+					if($this->input->post('sd')) {
+						$sd = $this->input->post('sd');
+						$ed = $this->input->post('ed');
+						$this->db->where("date_applied between '$sd' AND '$ed'");
+					}
+					$this->db->like($item, strtolower($_POST['search']['value']));
+				}else{
+					if($this->input->post('sd')) {
+						$sd = $this->input->post('sd');
+						$ed = $this->input->post('ed');
+						$this->db->where("date_applied between '$sd' AND '$ed'");
+					}
+					$this->db->or_like($item, strtolower($_POST['search']['value']));
+				}
+			}
+			$column[$i] = $item;
+			$i++;
+		}
+
+		if (isset($_POST['order'])) {
+			$this->db->order_by($column[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		}elseif($this->tblInternetSalesOrder){
+			$order = $this->tblInternetSalesOrder;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+		$this->db->order_by('comp_shop_id', 'DESC');
+	}
+
+	public function get_output_internet_sales(){
+		$this->_que_tbl_internet_sales();
+		if (!empty($_POST['length']))
+		$this->db->limit(($_POST['length'] < 0 ? 0 : $_POST['length']), $_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function count_all_internet_sales(){
+		$this->db->from($this->tblInternetSales);
+		return $this->db->count_all_results();
+	}
+
+	public function count_filter_internet_sales(){
+		$this->_que_tbl_internet_sales();
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
 	private function _que_tbl_monthly_bills(){
 		$this->db->from($this->tblMonthlyBills);
+		if($this->input->post('sd')) {
+			$sd = $this->input->post('sd');
+			$ed = $this->input->post('ed');
+			$this->db->where("date_applied between '$sd' AND '$ed'");
+		}
+		if ($this->input->post('lgu_id')) {
+			$lgu_id = $this->input->post('lgu_id');
+			$this->db->where('lgu_constituent_id', $lgu_id);
+		}
 		$i = 0;
 		foreach ($this->tblMonthlyBillsCollumn as $item) {
 			if (!empty($_POST['search']['value'])) {
 				if ($i === 0) {
+					if($this->input->post('sd')) {
+						$sd = $this->input->post('sd');
+						$ed = $this->input->post('ed');
+						$this->db->where("date_applied between '$sd' AND '$ed'");
+					}
+					if ($this->input->post('lgu_id')) {
+						$lgu_id = $this->input->post('lgu_id');
+						$this->db->where('lgu_constituent_id', $lgu_id);
+					}
 					$this->db->like($item, strtolower($_POST['search']['value']));
 				}else{
+					if($this->input->post('sd')) {
+						$sd = $this->input->post('sd');
+						$ed = $this->input->post('ed');
+						$this->db->where("date_applied between '$sd' AND '$ed'");
+					}
+					if ($this->input->post('lgu_id')) {
+						$lgu_id = $this->input->post('lgu_id');
+						$this->db->where('lgu_constituent_id', $lgu_id);
+					}
 					$this->db->or_like($item, strtolower($_POST['search']['value']));
 				}
 			}
@@ -56,6 +220,7 @@ class AdminMod extends CI_Model {
 		$query = $this->db->get();
 		return $query->num_rows();
 	}
+
 
 	//==============================================
 	

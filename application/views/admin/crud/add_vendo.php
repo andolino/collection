@@ -1,11 +1,11 @@
 <div class="cont-add-member row none">
 	<div class="col-4">
-		<a href="javascript:void(0);" class="float-right pr-2 pb-2" onclick="window.location.reload();" id="" data-link="" data-badge-head="MONTHLY BILLS"
+		<a href="javascript:void(0);" class="float-right pr-2 pb-2" onclick="window.location.reload();" id="" data-link="" data-badge-head="VENDO"
    								data-cls="cont-tbl-constituent" data-placement="top" data-toggle="tooltip" title="Back to List"><i class="fas fa-times"></i></a>
 	</div>
 	<div class="col-12"></div>
 	<div class="col-4">
-		<form id="frm-add-monthly-bills">
+		<form id="frm-add-vendo">
 			<div class="row">
 					<div class="col-12">
 						<label for="month" class="font-12 cst-lbl">Client</label>
@@ -16,23 +16,11 @@
 						</select>
 					</div>
 					<div class="col-12">
-						<label for="month" class="font-12 cst-lbl">Month</label>
-						<select class="custom-select font-12 form-control-sm" name="month">
-						<?php for ($i=1; $i < 13; $i++) { ?>
-							<option value="<?php echo date('F', strtotime("$i/12/20")); ?>"><?php echo date('F', strtotime("$i/12/20")); ?></option>
-						<?php } ?>
-						</select>
-					</div>
-					<div class="col-12">
 						<label for="date_applied" class="font-12 cst-lbl">Date</label>
 						<input type="date" class="form-control form-control-sm font-12" id="date_applied" name="date_applied">
 					</div>
 					<div class="col-12">
-						<label for="plan" class="font-12 cst-lbl">Plan</label>
-						<input type="text" class="form-control form-control-sm font-12" id="plan" name="plan">
-					</div>
-					<div class="col-12">
-						<label for="amount" class="font-12 cst-lbl">Amount</label>
+						<label for="amount" class="font-12 cst-lbl">Amount Collected</label>
 						<input type="text" class="form-control form-control-sm font-12 isNum" id="amount" name="amount">
 					</div>
 					<div class="col-12">

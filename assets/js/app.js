@@ -11,7 +11,153 @@ var tbl_lgu_constituent = [];
 $(document).ready(function() {
   //init plugin
   // $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+  var dd = new Date();
+  var sd = new Date(dd.getFullYear(), dd.getMonth(), 1);
+  var ed = new Date(dd.getFullYear(), dd.getMonth() + 1, 0);
+
+  $('.filter_vendo').daterangepicker({
+    autoUpdateInput: false,
+    locale: {
+      cancelLabel: 'Clear'
+    }
+  }, function(start, end){
+    $('.filter_vendo').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')); 
+    $('input[name="sd"]').val(formatDate(start));
+    $('input[name="ed"]').val(formatDate(end));
+    initVendoDataTables(formatDate(start), formatDate(end));
+
+    $.ajax({
+      type: "POST",
+      url: "get-vendo-hidden",
+      data: {
+        'lgu_id' : $('#members_name').val(),
+        'sd'     : formatDate(start), 
+        'ed'     : formatDate(end)
+      },
+      success: function (res) {
+        $('.export-excel').html(res);
+      }
+    });
+  });
   
+  $('.filter_monthly_bills').daterangepicker({
+    autoUpdateInput: false,
+    locale: {
+      cancelLabel: 'Clear'
+    }
+  }, function(start, end){
+    $('.filter_monthly_bills').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')); 
+    $('input[name="sd"]').val(formatDate(start));
+    $('input[name="ed"]').val(formatDate(end));
+    initMonthlyBillsDataTables(formatDate(start), formatDate(end));
+
+    $.ajax({
+      type: "POST",
+      url: "get-monthly-bill-hidden",
+      data: {
+        'lgu_id' : $('#members_name').val(),
+        'sd'     : formatDate(start), 
+        'ed'     : formatDate(end)
+      },
+      success: function (res) {
+        $('.export-excel').html(res);
+      }
+    });
+  });
+  
+  $('.filter_internet_sales').daterangepicker({
+    autoUpdateInput: false,
+    locale: {
+      cancelLabel: 'Clear'
+    }
+  }, function(start, end){
+    $('.filter_internet_sales').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')); 
+    $('input[name="sd"]').val(formatDate(start));
+    $('input[name="ed"]').val(formatDate(end));
+    initInternetSalesDataTables(formatDate(start), formatDate(end));
+
+    $.ajax({
+      type: "POST",
+      url: "get-internet-sales-hidden",
+      data: {
+        'sd'     : formatDate(start), 
+        'ed'     : formatDate(end)
+      },
+      success: function (res) {
+        $('.export-excel').html(res);
+      }
+    });
+  });
+
+  $(document).on('click', '.print-filter-mb-excel', function () {
+    exportF($(this), 'tbl-monthly-bills-excel', 'monthly_billing');
+  });
+  
+  $(document).on('click', '.print-filter-v-excel', function () {
+    exportF($(this), 'tbl-vendo-excel', 'vendo');
+  });
+  
+  $(document).on('click', '.print-filter-is-excel', function () {
+    exportF($(this), 'tbl-internet-sales-excel', 'internet_sales');
+  });
+
+  $(document).on('change', '#select-type', function (e) {
+    if($(this).val() == "") {
+      $('select[name="members_name"]').val('').trigger('change');
+      $('.members_name').addClass('d-none');
+      
+      $('select[name="members_name_v"]').val('').trigger('change');
+      $('.members_name_v').addClass('d-none');
+    } else {
+      $('.members_name').removeClass('d-none');
+      $('#members_name').select2({
+        dropdownCssClass: "font-12"
+      });
+      
+      $('.members_name_v').removeClass('d-none');
+      $('#members_name_v').select2({
+        dropdownCssClass: "font-12"
+      });
+    }
+  });
+
+  $(document).on('change', 'select[name="members_name"]', function (e) {
+    $('.filter_monthly_bills').html('<i class="fas fa-calendar"></i> FILTER DATE');
+    initMonthlyBillsDataTables(formatDate(sd), formatDate(ed));
+
+    $.ajax({
+      type: "POST",
+      url: "get-monthly-bill-hidden",
+      data: {
+        'lgu_id' : $('#members_name').val(),
+        'sd'     : formatDate(sd), 
+        'ed'     : formatDate(ed)
+      },
+      success: function (res) {
+        $('.export-excel').html(res);
+      }
+    });
+  });
+  
+  $(document).on('change', 'select[name="members_name_v"]', function (e) {
+    $('.filter_vendo').html('<i class="fas fa-calendar"></i> FILTER DATE');
+    initVendoDataTables(formatDate(sd), formatDate(ed));
+
+    $.ajax({
+      type: "POST",
+      url: "get-vendo-hidden",
+      data: {
+        'lgu_id' : $('#members_name_v').val(),
+        'sd'     : formatDate(sd), 
+        'ed'     : formatDate(ed)
+      },
+      success: function (res) {
+        $('.export-excel').html(res);
+      }
+    });
+  });
+
   //load page
   $(document).on('click', '#loadPage', function(event) {
     var link          = $(this).attr('data-link');
@@ -40,7 +186,9 @@ $(document).ready(function() {
 
       animateSingleIn('.cont-tbl-constituent', 'fadeIn');
       initLguDataTables();
-      initMonthlyBillsDataTables();
+      initMonthlyBillsDataTables(formatDate(sd), formatDate(ed));
+      initInternetSalesDataTables(formatDate(sd), formatDate(ed));
+      initVendoDataTables(formatDate(sd), formatDate(ed));
 
 
     });    
@@ -48,7 +196,20 @@ $(document).ready(function() {
 
   //init lgu table list
   initLguDataTables();
-  initMonthlyBillsDataTables();
+  initMonthlyBillsDataTables(formatDate(sd), formatDate(ed));
+  initInternetSalesDataTables(formatDate(sd), formatDate(ed));
+  initVendoDataTables(formatDate(sd), formatDate(ed));
+
+  //for numeric values input
+  $(document).on("focusout", '.isNum', function(e){
+    $(this).val(isNaN(parseFloat($(this).val().replace(',',''))) ? '0' : number_format($(this).val().replace(',', '')));
+  });
+  $(document).on("change, keyup", '.isNum', function(e){
+    var currentInput = $(this).val();
+    var fixedInput = currentInput.replace(/[A-Za-z!@#$%^&*()]/g, '');
+    $(this).val(fixedInput);
+  });
+
 
 
   //form submit
@@ -89,6 +250,39 @@ $(document).ready(function() {
     });
   });
   
+  $(document).on('submit', '#frm-add-internet-sales', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var frm = $(this).serialize(); 
+    customSwal(
+      'btn btn-success', 
+      'btn btn-danger mr-2', 
+      'Yes', 
+      'Wait', 
+      ['Hey!', 'Are you sure you want to save', 'warning'], 
+      function(){
+        $.ajax({
+          url      : 'save-internet-sales',
+          type     : 'POST',
+          data     : frm,
+          dataType : 'JSON',
+          success  : function(res) {
+            console.log(res);
+            Swal.fire(
+              res.param1,
+              res.param2,
+              res.param3
+            );
+            $('a[data-link="tbl-internet-sales"]').trigger('click');
+          }
+        });
+    }, function(){
+      console.log('Fail');
+    });
+
+    
+  });
+  
   $(document).on('submit', '#frm-add-monthly-bills', function(e) {
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -107,7 +301,45 @@ $(document).ready(function() {
           dataType : 'JSON',
           success  : function(res) {
             console.log(res);
+            Swal.fire(
+              res.param1,
+              res.param2,
+              res.param3
+            );
             $('a[data-link="tbl-monthly-bills"]').trigger('click');
+          }
+        });
+    }, function(){
+      console.log('Fail');
+    });
+
+    
+  });
+  
+  $(document).on('submit', '#frm-add-vendo', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var frm = $(this).serialize(); 
+    customSwal(
+      'btn btn-success', 
+      'btn btn-danger mr-2', 
+      'Yes', 
+      'Wait', 
+      ['Hey!', 'Are you sure you want to save', 'warning'], 
+      function(){
+        $.ajax({
+          url      : 'save-vendo',
+          type     : 'POST',
+          data     : frm,
+          dataType : 'JSON',
+          success  : function(res) {
+            console.log(res);
+            Swal.fire(
+              res.param1,
+              res.param2,
+              res.param3
+            );
+            $('a[data-link="tbl-vendo"]').trigger('click');
           }
         });
     }, function(){
@@ -406,7 +638,7 @@ function initLguDataTables(){
     columnDefs                 : [
       { 
         orderable            : false, 
-        targets              : [0,1,2,3,4,5,6,7,8] 
+        targets              : [0,1,2,3,4,5,6] 
       }
     ],
     "serverSide"               : true,
@@ -426,8 +658,86 @@ function initLguDataTables(){
   });
 }
 
-function initMonthlyBillsDataTables(){
+function initInternetSalesDataTables(sd, ed){
   var myObjKeyLguConst = {};
+  $('#tbl-internet-sales').DataTable().clear().destroy();
+  tbl_lgu_constituent  = $("#tbl-internet-sales").DataTable({
+    searchHighlight : true,
+    lengthMenu      : [[5, 10, 20, 30, 50, -1], [5, 10, 20, 30, 50, 'All']],
+    language: {
+        search                 : '_INPUT_',
+        searchPlaceholder      : 'Search...',
+        lengthMenu             : '_MENU_'       
+    },
+    columnDefs                 : [
+      { 
+        orderable            : false, 
+        targets              : [0,1,2] 
+      }
+    ],
+    "serverSide"               : true,
+    "processing"               : true,
+    "ajax"                     : {
+        "url"                  : 'server-tbl-internet-sales',
+        "type"                 : 'POST',
+        "data"                 : {
+          "sd"   : sd,
+          "ed"   : ed
+        }
+    },
+    'createdRow'            : function(row, data, dataIndex) {
+      var dataRowAttrIndex = ['data-lgu-const-id'];
+      var dataRowAttrValue = [0];
+        for (var i = 0; i < dataRowAttrIndex.length; i++) {
+          myObjKeyLguConst[dataRowAttrIndex[i]] = data[dataRowAttrValue[i]];
+        }
+        $(row).attr(myObjKeyLguConst);
+    }
+  });
+}
+
+function initVendoDataTables(sd, ed){
+  var myObjKeyLguConst = {};
+  $('#tbl-vendo').DataTable().clear().destroy();
+  tbl_lgu_constituent  = $("#tbl-vendo").DataTable({
+    searchHighlight : true,
+    lengthMenu      : [[5, 10, 20, 30, 50, -1], [5, 10, 20, 30, 50, 'All']],
+    language: {
+        search                 : '_INPUT_',
+        searchPlaceholder      : 'Search...',
+        lengthMenu             : '_MENU_'       
+    },
+    columnDefs                 : [
+      { 
+        orderable            : false, 
+        targets              : [0,1,2,3] 
+      }
+    ],
+    "serverSide"               : true,
+    "processing"               : true,
+    "ajax"                     : {
+        "url"                  : 'server-tbl-vendo',
+        "type"                 : 'POST',
+        "data"                 : {
+          "sd"   : sd,
+          "ed"   : ed,
+          "lgu_id" : $('select[name="members_name_v"]').val()
+        }
+    },
+    'createdRow'            : function(row, data, dataIndex) {
+      var dataRowAttrIndex = ['data-lgu-const-id'];
+      var dataRowAttrValue = [0];
+        for (var i = 0; i < dataRowAttrIndex.length; i++) {
+          myObjKeyLguConst[dataRowAttrIndex[i]] = data[dataRowAttrValue[i]];
+        }
+        $(row).attr(myObjKeyLguConst);
+    }
+  });
+}
+
+function initMonthlyBillsDataTables(sd, ed){
+  var myObjKeyLguConst = {};
+  $('#tbl-monthly-bills').DataTable().clear().destroy();
   tbl_lgu_constituent  = $("#tbl-monthly-bills").DataTable({
     searchHighlight : true,
     lengthMenu      : [[5, 10, 20, 30, 50, -1], [5, 10, 20, 30, 50, 'All']],
@@ -447,6 +757,11 @@ function initMonthlyBillsDataTables(){
     "ajax"                     : {
         "url"                  : 'server-tbl-monthly-bills',
         "type"                 : 'POST',
+        "data"                 : {
+          "sd"   : sd,
+          "ed"   : ed,
+          "lgu_id" : $('select[name="members_name"]').val()
+        }
     },
     'createdRow'            : function(row, data, dataIndex) {
       var dataRowAttrIndex = ['data-lgu-const-id'];
@@ -459,3 +774,32 @@ function initMonthlyBillsDataTables(){
   });
 }
   //init datatables END =====================================================>
+// format numbers to currency format
+function number_format(amount) {
+  var formatted_amount = parseFloat(amount)
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return formatted_amount;
+}
+
+function formatDate(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+  if (month.length < 2) 
+      month = '0' + month;
+  if (day.length < 2) 
+      day = '0' + day;
+  return [year, month, day].join('-');
+}
+
+function exportF(elem, tbl, filename) {
+  var table = document.getElementById(tbl);
+  var html = table.outerHTML;
+  var url = 'data:application/vnd.ms-excel,' + escape(html); // Set your html table into url 
+  elem[0].setAttribute("href", url);
+  elem[0].setAttribute("download", filename + ".xls"); // Choose the file name
+  return false;
+}

@@ -19,10 +19,10 @@
         <a href="<?php echo base_url(); ?>monthly-bills"><i class="fas fa-money-check"></i> MONTHLY BILLS</a>
       </li>
       <li class="">
-        <a href="<?php echo base_url(); ?>control-token"><i class="fas fa-money-check"></i> INTERNET SALES</a>
+        <a href="<?php echo base_url(); ?>internet-sales"><i class="fas fa-money-check"></i> INTERNET SALES</a>
       </li>
       <li class="">
-        <a href="<?php echo base_url(); ?>control-token"><i class="fas fa-money-check"></i> VENDO COLLECTED SALES</a>
+        <a href="<?php echo base_url(); ?>vendo"><i class="fas fa-money-check"></i> VENDO COLLECTED SALES</a>
       </li>
       <!-- <li class="active">
           <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Manage Information</a>
