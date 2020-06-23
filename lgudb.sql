@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 20, 2020 at 04:17 AM
+-- Generation Time: Jun 23, 2020 at 11:59 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.2.31
 
@@ -91,10 +91,6 @@ CREATE TABLE `children` (
 INSERT INTO `children` (`children_id`, `lgu_constituent_id`, `name`, `birthplace`) VALUES
 (29, 36, 'Basti Artadi', 'Makati'),
 (30, 36, 'Gab Alipe', 'USA'),
-(36, 35, 'Andolino JR', 'Makati 1'),
-(37, 35, 'Chris Emsworth', 'Makati  2'),
-(38, 35, 'Chris Evans', 'Makati 3'),
-(40, 38, 'Zhac Haven', 'Makati 3'),
 (49, 39, '', '');
 
 -- --------------------------------------------------------
@@ -105,10 +101,28 @@ INSERT INTO `children` (`children_id`, `lgu_constituent_id`, `name`, `birthplace
 
 CREATE TABLE `comp_shop` (
   `comp_shop_id` int(11) NOT NULL,
-  `date` date DEFAULT NULL,
-  `amount_collected` decimal(12,2) DEFAULT NULL,
-  `entry_date` date DEFAULT NULL
+  `month` varchar(255) DEFAULT NULL,
+  `date_applied` date DEFAULT NULL,
+  `plan` varchar(255) DEFAULT NULL,
+  `signature` varchar(255) DEFAULT NULL,
+  `entry_date` date DEFAULT NULL,
+  `amount` decimal(12,2) DEFAULT 0.00,
+  `remarks` varchar(255) DEFAULT NULL,
+  `lgu_constituent_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `comp_shop`
+--
+
+INSERT INTO `comp_shop` (`comp_shop_id`, `month`, `date_applied`, `plan`, `signature`, `entry_date`, `amount`, `remarks`, `lgu_constituent_id`) VALUES
+(1, NULL, '2020-06-24', NULL, NULL, '2020-06-23', '6500.00', 'TEST', NULL),
+(2, NULL, '2020-06-24', NULL, NULL, '2020-06-23', '8500.00', 'TEST', NULL),
+(3, NULL, '2020-06-30', NULL, NULL, '2020-06-23', '2500.00', 'TEST', NULL),
+(4, NULL, '2020-05-20', NULL, NULL, '2020-06-23', '2500.00', 'TEST2', NULL),
+(5, NULL, '2020-10-28', NULL, NULL, '2020-06-23', '15000.00', 'TEST', NULL),
+(6, NULL, '2020-06-25', NULL, NULL, '2020-06-23', '15000.00', 'TEST', NULL),
+(7, NULL, '2020-06-24', NULL, NULL, '2020-06-23', '15000.00', 'TEST', NULL);
 
 -- --------------------------------------------------------
 
@@ -128,8 +142,6 @@ CREATE TABLE `constituent_living_status` (
 --
 
 INSERT INTO `constituent_living_status` (`cons_living_status_id`, `lgu_constituent_id`, `status_id`, `id`) VALUES
-(5, 38, 1, '123'),
-(6, 38, 2, '1234'),
 (11, 39, 1, ''),
 (12, 39, 2, '');
 
@@ -176,13 +188,6 @@ INSERT INTO `government_card` (`government_card_id`, `lgu_constituent_id`, `id_n
 (23, 36, '5', '3551252551'),
 (24, 36, '4', '005252'),
 (25, 36, '2', '9288234'),
-(30, 35, '1', '003049340'),
-(31, 35, '5', '923838'),
-(32, 35, '4', '39239238'),
-(33, 35, '2', '0323923'),
-(37, 38, '1', '00283'),
-(38, 38, '4', '44242'),
-(39, 38, '2', '92933'),
 (53, 39, '', '');
 
 -- --------------------------------------------------------
@@ -228,18 +233,22 @@ CREATE TABLE `lgu_constituent` (
   `mothers_birth_place` text DEFAULT NULL,
   `height` text DEFAULT NULL,
   `weight` text DEFAULT NULL,
-  `identifying_marks` text DEFAULT NULL
+  `identifying_marks` text DEFAULT NULL,
+  `member_type` tinyint(1) DEFAULT 0 COMMENT '0 = member, 1 = vendo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `lgu_constituent`
 --
 
-INSERT INTO `lgu_constituent` (`lgu_constituent_id`, `social_status`, `pwd_id`, `is_house_owner`, `house_type`, `tel_no`, `mobile`, `first_name`, `last_name`, `middle_name`, `gender`, `age`, `dob`, `religion`, `religion_desc`, `highest_educ_attmnt`, `occupation`, `ofc_address`, `ofc_contact`, `email`, `user_id`, `transaction_date`, `is_deleted`, `residential_address`, `citizenship`, `birthplace`, `civil_status`, `other_name`, `spouce_name`, `spouce_birth_place`, `fathers_name`, `fathers_birth_place`, `mothers_name`, `mothers_birth_place`, `height`, `weight`, `identifying_marks`) VALUES
-(35, '1|2|3', '00062424', 1, 1, '7899234', '09773656715', 'andolino', 'baisac', 'gallardo', 'MALE', 29, '1990-11-06', '3', 'Church of God', 2, 'Developer', 'Amorsolo Street', '09773394923', 'baisac.andolino@gmail.com', 1, '2020-03-28', 0, '127 Caimito St. Blk 5 West Rembo', 'filipino', 'makati', '', 'dondon', 'Queenie Jane Paniamogan Casera', 'Matinao Mainit Surigao Del Sur', 'Charleto Casera', 'Matinao', 'Jinkee Paniamogan Casera', 'Matinao 2', '172cm', '76lbs', '--'),
-(36, NULL, NULL, 0, 1, '7424525', '09673232424', 'juan', 'dela cruz', 'g', 'MALE', 33, '1987-02-21', '1', NULL, 2, 'Musician', 'Quezon City', '9328392', 'juandelacruz@gmail.com', 1, '2020-03-26', 0, '299 Maibini St. San Roque Quezon City', 'filipino', 'Makati', 'Single', 'John', 'Erlinda Dela Tore', 'Makati', 'Ramon Magsaysay', 'Zambales', 'Imelda Popin', 'Quezon Province', '160cm', '69lbs', '--'),
-(38, NULL, NULL, 1, 1, '7529923', '09282783742', 'Peter', 'Mora', 'Bilyones', 'MALE', 33, '1987-12-28', '1', NULL, 2, 'Developer', 'Mandaluyong Pasig City', '9288234', 'morap@gmail.com', 1, '2020-03-30', 0, '122 Blk 5 Tubo Gaming West Rembo Makati City', 'Filipino', 'Makati', '', 'Alien', 'Alliah Castillano', 'Cavite', 'Henry James Keenan Mora', 'Makati', 'Cleopatra Mora', 'Makati 2', '170cm', '72lbs', '--'),
-(39, NULL, NULL, 1, 1, '823823', '0923888238', 'Julie Ann', 'San Jose', 'G', 'MALE', 23, '1994-11-06', '1', NULL, 2, 'developer', 'Makati Office', '9238239', 'juliedon@gmail.com', 1, '2020-03-30', 0, '127 Caimito St. Blk 5 West Rembo', 'Filipino', 'makati', '', 'donjulie', 'dondon pentavia', 'makati', 'alvin fructuso', 'manila', 'apple mae aranas', 'balioag', '171cm', '55', 'no tattoo');
+INSERT INTO `lgu_constituent` (`lgu_constituent_id`, `social_status`, `pwd_id`, `is_house_owner`, `house_type`, `tel_no`, `mobile`, `first_name`, `last_name`, `middle_name`, `gender`, `age`, `dob`, `religion`, `religion_desc`, `highest_educ_attmnt`, `occupation`, `ofc_address`, `ofc_contact`, `email`, `user_id`, `transaction_date`, `is_deleted`, `residential_address`, `citizenship`, `birthplace`, `civil_status`, `other_name`, `spouce_name`, `spouce_birth_place`, `fathers_name`, `fathers_birth_place`, `mothers_name`, `mothers_birth_place`, `height`, `weight`, `identifying_marks`, `member_type`) VALUES
+(35, '1|2|3', '00062424', 1, 1, '7899234', '09773656715', 'andolino', 'baisac', 'gallardo', 'MALE', 29, '1990-11-06', '3', 'Church of God', 2, 'Developer', 'Amorsolo Street', '09773394923', 'baisac.andolino@gmail.com', 1, '2020-06-23', 0, '127 Caimito St. Blk 5 West Rembos', 'filipino', 'makati', '', 'dondon', 'Queenie Jane Paniamogan Casera', 'Matinao Mainit Surigao Del Sur', 'Charleto Casera', 'Matinao', 'Jinkee Paniamogan Casera', 'Matinao 2', '172cm', '76lbs', '--', 1),
+(36, NULL, NULL, 0, 1, '7424525', '09673232424', 'juan', 'dela cruz', 'g', 'MALE', 33, '1987-02-21', '1', NULL, 2, 'Musician', 'Quezon City', '9328392', 'juandelacruz@gmail.com', 1, '2020-03-26', 0, '299 Maibini St. San Roque Quezon City', 'filipino', 'Makati', 'Single', 'John', 'Erlinda Dela Tore', 'Makati', 'Ramon Magsaysay', 'Zambales', 'Imelda Popin', 'Quezon Province', '160cm', '69lbs', '--', 0),
+(38, NULL, NULL, 1, 1, '7529923', '09282783742', 'Peter', 'Mora', 'Bilyones', 'MALE', 33, '1987-12-28', '1', NULL, 2, 'Developer', 'Mandaluyong Pasig City', '9288234', 'morap@gmail.com', 1, '2020-06-22', 0, '122 Blk 5 Tubo Gaming West Rembo Makati City', 'Filipino', 'Makati', '', 'Alien', 'Alliah Castillano', 'Cavite', 'Henry James Keenan Mora', 'Makati', 'Cleopatra Mora', 'Makati 2', '170cm', '72lbs', '--', 0),
+(39, NULL, NULL, 1, 1, '823823', '0923888238', 'Julie Ann', 'San Jose', 'G', 'MALE', 23, '1994-11-06', '1', NULL, 2, 'developer', 'Makati Office', '9238239', 'juliedon@gmail.com', 1, '2020-03-30', 0, '127 Caimito St. Blk 5 West Rembo', 'Filipino', 'makati', '', 'donjulie', 'dondon pentavia', 'makati', 'alvin fructuso', 'manila', 'apple mae aranas', 'balioag', '171cm', '55', 'no tattoo', 0),
+(40, NULL, NULL, 1, NULL, NULL, NULL, 'TEST2', 'TEST', 'TEST3', 'MALE', 25, '2020-06-24', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2020-06-23', 0, 'TEST @ ', 'TEST6', 'TEST5', '', 'TEST4', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(41, NULL, NULL, 1, NULL, NULL, NULL, 'John Paul', 'Macalood', 'G', 'MALE', 25, '1995-06-21', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2020-06-23', 0, NULL, 'Filipino', 'Makati', 'Single', 'Jampong', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(42, NULL, NULL, 0, NULL, NULL, NULL, 'Jeriel', 'Gallofin', 'G', 'MALE', 25, '2020-06-25', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2020-06-23', 0, '127 Caimito St. Blk 5 West Rembo Makati City', 'Filipino', 'Makati', 'Single', 'Netoy', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -276,7 +285,7 @@ CREATE TABLE `monthly_bills` (
   `signature` varchar(255) DEFAULT NULL,
   `entry_date` date DEFAULT NULL,
   `amount` decimal(12,2) DEFAULT 0.00,
-  `remarks` decimal(12,2) DEFAULT 0.00,
+  `remarks` varchar(255) DEFAULT NULL,
   `lgu_constituent_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -285,9 +294,10 @@ CREATE TABLE `monthly_bills` (
 --
 
 INSERT INTO `monthly_bills` (`monthly_bills_id`, `month`, `date_applied`, `plan`, `signature`, `entry_date`, `amount`, `remarks`, `lgu_constituent_id`) VALUES
-(1, 'sdsd', '2020-06-19', 'sdsdsd', NULL, '2020-06-19', '0.00', '0.00', NULL),
-(2, 'March', '2020-06-24', '1200', NULL, '2020-06-19', '15000.00', '0.00', 35),
-(3, 'TEST', '2020-06-24', '1200', NULL, '2020-06-19', '1200.00', '0.00', 36);
+(2, 'March', '2020-06-24', '1200', NULL, '2020-06-22', '1600.00', 'TEST', 35),
+(3, 'January', '2020-04-24', '1200', NULL, '2020-06-22', '1200.00', '0.00', 36),
+(4, 'June', '2020-05-24', '1200', NULL, '2020-06-22', '1500.00', '0.00', 35),
+(5, 'January', '2020-01-23', '1200', NULL, '2020-06-23', '1200.00', 'TEST REMARKSSSSS', 38);
 
 -- --------------------------------------------------------
 
@@ -366,11 +376,56 @@ INSERT INTO `users` (`users_id`, `screen_name`, `username`, `password`, `txt_pas
 
 CREATE TABLE `vendo` (
   `vendo_id` int(11) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `date` date DEFAULT NULL,
-  `amount_collected` decimal(12,2) DEFAULT NULL,
-  `entry_date` date DEFAULT NULL
+  `month` varchar(255) DEFAULT NULL,
+  `date_applied` date DEFAULT NULL,
+  `plan` varchar(255) DEFAULT NULL,
+  `signature` varchar(255) DEFAULT NULL,
+  `entry_date` date DEFAULT NULL,
+  `amount` decimal(12,2) DEFAULT 0.00,
+  `remarks` varchar(255) DEFAULT NULL,
+  `lgu_constituent_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `vendo`
+--
+
+INSERT INTO `vendo` (`vendo_id`, `month`, `date_applied`, `plan`, `signature`, `entry_date`, `amount`, `remarks`, `lgu_constituent_id`) VALUES
+(1, NULL, '2020-07-02', NULL, NULL, '2020-06-23', '15000.00', 'TEST REMARKS', 41),
+(2, NULL, '2020-08-19', NULL, NULL, '2020-06-23', '58000.00', 'TEST REMARKS', 41),
+(3, NULL, '2020-06-24', NULL, NULL, '2020-06-23', '20000.00', 'TEST REMARKS', 41),
+(4, NULL, '2020-06-18', NULL, NULL, '2020-06-23', '27000.00', 'TEST REMARKS 2', 35),
+(5, NULL, '2020-06-18', NULL, NULL, '2020-06-23', '15000.00', 'TEST REMARKS AGAIN', 42);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_vendo`
+-- (See below for the actual view)
+--
+CREATE TABLE `v_vendo` (
+`vendo_id` int(11)
+,`month` varchar(255)
+,`date_applied` date
+,`plan` varchar(255)
+,`signature` varchar(255)
+,`entry_date` date
+,`amount` decimal(12,2)
+,`remarks` varchar(255)
+,`lgu_constituent_id` int(11)
+,`first_name` text
+,`last_name` text
+,`middle_name` text
+);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_vendo`
+--
+DROP TABLE IF EXISTS `v_vendo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_vendo`  AS  select `v`.`vendo_id` AS `vendo_id`,`v`.`month` AS `month`,`v`.`date_applied` AS `date_applied`,`v`.`plan` AS `plan`,`v`.`signature` AS `signature`,`v`.`entry_date` AS `entry_date`,`v`.`amount` AS `amount`,`v`.`remarks` AS `remarks`,`v`.`lgu_constituent_id` AS `lgu_constituent_id`,`m`.`first_name` AS `first_name`,`m`.`last_name` AS `last_name`,`m`.`middle_name` AS `middle_name` from (`vendo` `v` left join `lgu_constituent` `m` on(`m`.`lgu_constituent_id` = `v`.`lgu_constituent_id`)) ;
 
 --
 -- Indexes for dumped tables
@@ -490,7 +545,7 @@ ALTER TABLE `children`
 -- AUTO_INCREMENT for table `comp_shop`
 --
 ALTER TABLE `comp_shop`
-  MODIFY `comp_shop_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `comp_shop_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `constituent_living_status`
@@ -514,7 +569,7 @@ ALTER TABLE `government_card`
 -- AUTO_INCREMENT for table `lgu_constituent`
 --
 ALTER TABLE `lgu_constituent`
-  MODIFY `lgu_constituent_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `lgu_constituent_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `living_status`
@@ -526,7 +581,7 @@ ALTER TABLE `living_status`
 -- AUTO_INCREMENT for table `monthly_bills`
 --
 ALTER TABLE `monthly_bills`
-  MODIFY `monthly_bills_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `monthly_bills_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `residential`
@@ -550,7 +605,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `vendo`
 --
 ALTER TABLE `vendo`
-  MODIFY `vendo_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `vendo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
